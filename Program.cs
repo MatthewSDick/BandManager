@@ -19,6 +19,7 @@ namespace BandManager
       }
       return returnNumber;
     }
+
     static void AddBand()
     {
       var bandToAdd = new Band();
@@ -65,25 +66,21 @@ namespace BandManager
     static void DeactivateBand()
     {
       var Db = new DatabaseContext();
-      Db.ShowAllBands();
-      var bandToDeactivate = int.Parse(Console.ReadLine());
-      Db.DeactivateBand(bandToDeactivate);
+      Db.DeactivateBand();
     }
 
     static void ReactivateBand()
     {
       var Db = new DatabaseContext();
-      Db.ShowAllBands();
-      var bandToDelete = int.Parse(Console.ReadLine());
-      Db.ReactivateBand(bandToDelete);
+      Db.ReactivateBand();
     }
 
     static void ShowAllBands()
     {
       var Db = new DatabaseContext();
       Db.ShowAllBands();
-      var bandListAlbums = int.Parse(Console.ReadLine());
-      Db.ViewBandAlbums(bandListAlbums);
+      Console.WriteLine("Hit ENTER to continue.");
+      Console.ReadLine();
     }
 
     static void ViewAlbumsByRelease()
@@ -110,8 +107,6 @@ namespace BandManager
       Db.ViewNotSignedBands();
     }
 
-
-
     static void Main(string[] args)
     {
       //var Db = new DatabaseContext();
@@ -120,9 +115,26 @@ namespace BandManager
         .Add("Add Band", () => AddBand())
         .Add("Produce Album", () => ProduceAlbum())
         .Add("Deactivate Band", () => DeactivateBand())
+        .Add("Reactivate Band", () => ReactivateBand())
+        .Add("Show all bands", () => ShowAllBands())
+        .Add("View albums by release date.", () => ViewAlbumsByRelease())
+        .Add("View all songs", () => ViewSongs())
+        .Add("View all signed bands", () => ViewSignedBands())
+        .Add("View all bands not signed", () => ViewNotSignedBands())
         .Add("Close", ConsoleMenu.Close)
-        .Configure(config => { config.Selector = "==}"; })
+        .Configure(config =>
+        {
+          config.Selector = "-->";
+          config.Title = "*** Band Manager ***";
+          config.EnableWriteTitle = true;
+          config.ClearConsole = true;
+        }
+          )
         .Show();
+
+
+
+
 
     }
   }
