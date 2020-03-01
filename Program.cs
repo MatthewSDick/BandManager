@@ -2,6 +2,7 @@
 using BandManager.Models;
 using System.Linq;
 using ConsoleTools;
+using System.Collections.Generic;
 
 namespace BandManager
 {
@@ -22,6 +23,7 @@ namespace BandManager
 
     static void AddBand()
     {
+      Console.Clear();
       var bandToAdd = new Band();
       Console.WriteLine($"What is the name of the band.");
       bandToAdd.Name = (Console.ReadLine());
@@ -44,12 +46,16 @@ namespace BandManager
 
     static void ProduceAlbum()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
       Db.ShowAllBands();
+      Console.WriteLine("Please enter the number of the band the new album is for");
       var band = int.Parse(Console.ReadLine());
       var albumToAdd = new Album();
+      Console.Clear();
       Console.WriteLine("What is the title of the album?");
       albumToAdd.Title = (Console.ReadLine());
+      Console.Clear();
       Console.WriteLine("Is the album explicit? (Y) or (N)");
       var isExplicit = Console.ReadLine().ToLower();
       if (isExplicit == "y")
@@ -60,49 +66,104 @@ namespace BandManager
       {
         albumToAdd.IsExplicit = false;
       }
-      Db.ProduceAlbum(band, albumToAdd);
+
+      // Loop for list of songs
+      var listOfSongs = new List<Song>();
+
+      var addSongs = true;
+
+      while (addSongs)
+      {
+        Console.WriteLine();
+        Console.Clear();
+        Console.WriteLine("What is the title of the song?");
+        var songTitle = Console.ReadLine();
+        Console.Clear();
+        Console.WriteLine("What are the lyrics? for the song");
+        var songLyrics = Console.ReadLine();
+        Console.Clear();
+        Console.WriteLine("What is the length of the song?");
+        var songLength = Console.ReadLine();
+        Console.Clear();
+        Console.WriteLine("What is the genre of the song?");
+        var songGenre = Console.ReadLine();
+        var newSongToAdd = new Song
+        {
+          Title = songTitle,
+          Lyrics = songLyrics,
+          Length = songLength,
+          Genre = songGenre,
+        };
+        listOfSongs.Add(newSongToAdd);
+        Console.Clear();
+        Console.WriteLine($"Your song has been added.");
+        Console.WriteLine("\n");
+        Console.WriteLine("Do you want to add another song? (Y) or (N)");
+        var anotherSong = Console.ReadLine().ToLower();
+
+        if (anotherSong == "n")
+        {
+          addSongs = false;
+        }
+
+      }
+      Db.ProduceAlbum(band, albumToAdd, listOfSongs);
     }
 
     static void DeactivateBand()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
       Db.DeactivateBand();
     }
 
     static void ReactivateBand()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
       Db.ReactivateBand();
     }
 
-    static void ShowAllBands()
+    static void ViewBandAlbums()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
-      Db.ShowAllBands();
-      Console.WriteLine("Hit ENTER to continue.");
-      Console.ReadLine();
+      Db.ViewBandAlbums();
     }
 
     static void ViewAlbumsByRelease()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
       Db.ViewAlbumsByRelease();
     }
 
     static void ViewSongs()
     {
+      // User picks band then album to see the songs
+      Console.Clear();
       var Db = new DatabaseContext();
-      Db.ViewSongs();
+      Db.ShowAllBands();
+      Console.WriteLine("Please enter the number for the band.");
+      var band = int.Parse(Console.ReadLine());
+      Console.Clear();
+      // need by
+      Db.GetAlbumNumber(band);
+      Console.WriteLine("Please enter the number for the album.");
+      var album = int.Parse(Console.ReadLine());
+      Db.ViewSongs(album);
     }
 
     static void ViewSignedBands()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
       Db.ViewSignedBands();
     }
 
     static void ViewNotSignedBands()
     {
+      Console.Clear();
       var Db = new DatabaseContext();
       Db.ViewNotSignedBands();
     }
@@ -116,9 +177,9 @@ namespace BandManager
         .Add("Produce Album", () => ProduceAlbum())
         .Add("Deactivate Band", () => DeactivateBand())
         .Add("Reactivate Band", () => ReactivateBand())
-        .Add("Show all bands", () => ShowAllBands())
+        .Add("Show all albums for a band", () => ViewBandAlbums())
         .Add("View albums by release date.", () => ViewAlbumsByRelease())
-        .Add("View all songs", () => ViewSongs())
+        .Add("View all songs from a album", () => ViewSongs())
         .Add("View all signed bands", () => ViewSignedBands())
         .Add("View all bands not signed", () => ViewNotSignedBands())
         .Add("Close", ConsoleMenu.Close)
